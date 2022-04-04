@@ -4,10 +4,8 @@ from tkinter import messagebox
 from kju_aphorisms import get_kju_aphorism as aphorism
 from scheduler import *
 import re
-import threading
-import datetime
+import pendulum as p
 import time
-import winsound
 
 
 class App:
@@ -21,6 +19,8 @@ class App:
         self.root.iconphoto(False, self.photo)
 
         # Aphorism and Author Text Labels
+        self.aphorism = aphorism()
+        self.new_aphorism = False
         self.aphorism_text = ttk.Label(text=aphorism(), background='lightgray', wraplength=300,
                                  justify='center')
         self.aphorism_text.grid(row=0, column=0, columnspan=2, padx=20, pady=20)
@@ -36,7 +36,12 @@ class App:
         self.schedule_info.grid(row=3, column=0, sticky='w', padx=20, pady=10)
 
     def alarm_watch(self):
-        pass
+        scheduled_time = p.parse(get_schedule(), tz="Asia/Shanghai")
+        if scheduled_time.is_past():
+            scheduled_time = scheduled_time.add(days=1)
+        while scheduled_time.is_future():
+            time.sleep(60)
+        self.aphorism_text.config(text=aphorism())
 
     def new_schedule(self):
         self.schedule_window = Toplevel(self.root)
