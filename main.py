@@ -10,7 +10,7 @@ Last Updated: 04 Apr 2022
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-from kju_aphorisms import get_kju_aphorism as aphorism
+from kju_aphorisms import get_kju_aphorism as kju_aphorism
 import re
 import pendulum as p
 
@@ -91,12 +91,18 @@ class App:
     def get_aphorism(self):
         alarm_past = p.parse(self.get_alarm()).is_past()
         if alarm_past:
-            return aphorism()
+            aphorism = kju_aphorism()
+            with open('schedule.txt', 'a') as f:
+                f.write(f'\n{aphorism}')
+            return aphorism
         else:
             with open('schedule.txt') as f:
                 contents = f.readlines()
             if len(contents) == 1:
-                return aphorism()
+                aphorism = kju_aphorism()
+                with open('schedule.txt', 'a') as f:
+                    f.write(f'\n{aphorism}')
+                return aphorism
         return contents[1]
 
 def main():
